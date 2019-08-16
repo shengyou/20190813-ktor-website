@@ -73,6 +73,9 @@
 
         <div class="text-right">
           <a href="/posts/${post.id}/edit" class="btn btn-primary">Edit</a>
+          <form action="/posts/${post.id}/destroy" method="post" enctype="application/x-www-form-urlencoded" style="display: inline-block">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
         </div>
 
         <!-- Post Content -->

@@ -161,6 +161,15 @@ fun Application.module(testing: Boolean = false) {
 
             call.respondRedirect("/posts/$id", false)
         }
+
+        post("/posts/{id}/destroy") {
+            val id = call.parameters["id"]?.toInt()!!
+            transaction {
+                Posts.deleteWhere { Posts.id eq id }
+            }
+
+            call.respondRedirect("/posts", false)
+        }
     }
 
 }
