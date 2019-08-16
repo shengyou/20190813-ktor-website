@@ -11,14 +11,15 @@ import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
+import io.ktor.request.receiveParameters
 import io.ktor.response.respond
+import io.ktor.response.respondRedirect
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.routing
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -73,6 +74,24 @@ fun Application.module(testing: Boolean = false) {
                     mapOf("posts" to posts)
                 )
             )
+        }
+
+        get("/posts/create") {
+            call.respond(FreeMarkerContent("posts/create.ftl", null))
+        }
+
+        post("/posts") {
+            val params = call.receiveParameters()
+            val id = transaction {
+                Posts.insert {
+                    it[title] = params["title"].toString()
+                    it[content] = params["content"].toString()
+                    it[createdAt] = DateTime.now()
+                    it[updatedAt] = DateTime.now()
+                }.get(Posts.id)
+            }
+
+            call.respondRedirect("/posts/$id", false)
         }
 
         get("/posts/{id}") {
