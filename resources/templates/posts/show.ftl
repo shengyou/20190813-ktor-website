@@ -71,6 +71,10 @@
 
         <hr>
 
+        <div class="text-right">
+          <a href="/posts/${post.id}/edit" class="btn btn-primary">Edit</a>
+        </div>
+
         <!-- Post Content -->
         ${post.content}
 

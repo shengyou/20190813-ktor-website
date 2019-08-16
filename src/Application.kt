@@ -121,6 +121,46 @@ fun Application.module(testing: Boolean = false) {
                 )
             }
         }
+
+        get("/posts/{id}/edit") {
+            val id = call.parameters["id"]?.toInt()!!
+            val post = transaction {
+                Posts.select { Posts.id eq id }
+                    .map {
+                        Post(
+                            it[Posts.id],
+                            it[Posts.title],
+                            it[Posts.content],
+                            it[Posts.createdAt],
+                            it[Posts.updatedAt]
+                        )
+                    }
+                    .singleOrNull()
+            }
+
+            if (post == null) {
+                call.respond(HttpStatusCode.NotFound)
+            } else {
+                call.respond(
+                    FreeMarkerContent(
+                        "posts/edit.ftl",
+                        mapOf("post" to post)
+                    )
+                )
+            }
+        }
+
+        post("/posts/{id}/update") {
+            val id = call.parameters["id"]?.toInt()!!
+            val params = call.receiveParameters()
+            Posts.update({ Posts.id eq id}) {
+                it[title] = params["title"].toString()
+                it[content] = params["content"].toString()
+                it[updatedAt] = DateTime.now()
+            }
+
+            call.respondRedirect("/posts/$id", false)
+        }
     }
 
 }
