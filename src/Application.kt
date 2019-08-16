@@ -1,12 +1,11 @@
 package com.example
 
-import io.ktor.application.*
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.*
-import io.ktor.request.*
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.html.respondHtml
 import io.ktor.routing.get
 import io.ktor.routing.routing
+import kotlinx.html.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -16,11 +15,19 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         get("/") {
-            call.respondText(
-                "Hello, world",
-                ContentType.Text.Plain,
-                HttpStatusCode.OK
-            )
+            call.respondHtml {
+                head {
+                    title { +"Hello, HTML DSL" }
+                }
+                body {
+                    h1 { +"HTML DSL" }
+                    ul {
+                        li { +"Item 1" }
+                        li { +"Item 2" }
+                        li { +"Item 3" }
+                    }
+                }
+            }
         }
     }
 
